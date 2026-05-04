@@ -3,9 +3,9 @@
 import { useState } from "react";
 
 export default function Home() {
-  const [tab, setTab] = useState("upcoming");
+  const [tab, setTab] = useState("home");
 
-  /* ---------------- UPCOMING SETS (HOME) ---------------- */
+  /* ---------------- UPCOMING SETS ---------------- */
   const upcomingSets = [
     {
       name: "Temporal Forces",
@@ -24,7 +24,23 @@ export default function Home() {
     }
   ];
 
-  /* ---------------- CHASE CARDS (NEW SYSTEM) ---------------- */
+  /* ---------------- STOCK ALERTS (NEW FOCUS) ---------------- */
+  const stockAlerts = [
+    {
+      title: "Paradox Rift Booster Boxes",
+      status: "⚠️ Low stock in UK retailers"
+    },
+    {
+      title: "Paldean Fates ETB",
+      status: "📦 Reprint wave arriving soon"
+    },
+    {
+      title: "151 Booster Bundles",
+      status: "🔥 High demand, intermittent availability"
+    }
+  ];
+
+  /* ---------------- CHASE CARDS ---------------- */
   const chaseBySet = [
     {
       set: "Temporal Forces",
@@ -64,7 +80,6 @@ export default function Home() {
           color: white;
         }
 
-        /* TOP BAR */
         .topbar {
           display: flex;
           justify-content: space-between;
@@ -103,7 +118,6 @@ export default function Home() {
           margin-top: 25px;
         }
 
-        /* SIMPLE LIST (HOME) */
         .list {
           display: flex;
           flex-direction: column;
@@ -123,12 +137,10 @@ export default function Home() {
           margin-top: 5px;
         }
 
-        /* 4x2 GRID FOR CHASE */
         .grid4x2 {
           display: grid;
           grid-template-columns: repeat(4, 1fr);
           gap: 12px;
-          margin-bottom: 30px;
         }
 
         @media (max-width: 900px) {
@@ -150,11 +162,9 @@ export default function Home() {
           margin-top: 6px;
         }
 
-        .setTitle {
-          margin-top: 30px;
-          font-size: 18px;
-          color: #3b4cca;
-          font-weight: 700;
+        .alert {
+          color: #ffcc00;
+          font-weight: 600;
         }
       `}</style>
 
@@ -163,7 +173,7 @@ export default function Home() {
         <div className="logo">⚡ PokéTracker</div>
 
         <div className="nav">
-          <button onClick={() => setTab("upcoming")}>Upcoming Sets</button>
+          <button onClick={() => setTab("home")}>Home</button>
           <button onClick={() => setTab("chase")}>Top Chase Cards</button>
         </div>
       </div>
@@ -171,7 +181,7 @@ export default function Home() {
       <div className="container">
 
         {/* ---------------- HOME ---------------- */}
-        {tab === "upcoming" && (
+        {tab === "home" && (
           <>
             <h2>📅 Upcoming Set Releases</h2>
 
@@ -184,17 +194,28 @@ export default function Home() {
                 </div>
               ))}
             </div>
+
+            <h2>📦 Stock Alerts</h2>
+
+            <div className="list">
+              {stockAlerts.map((a, i) => (
+                <div className="item" key={i}>
+                  <div className="alert">{a.title}</div>
+                  <div className="small">{a.status}</div>
+                </div>
+              ))}
+            </div>
           </>
         )}
 
-        {/* ---------------- CHASE CARDS ---------------- */}
+        {/* ---------------- CHASE ---------------- */}
         {tab === "chase" && (
           <>
-            <h2>💰 Top 8 Chase Cards Per Set</h2>
+            <h2>💰 Top 8 Chase Cards</h2>
 
             {chaseBySet.map((set, i) => (
               <div key={i}>
-                <div className="setTitle">{set.set}</div>
+                <h3 style={{ color: "#3b4cca" }}>{set.set}</h3>
 
                 <div className="grid4x2">
                   {set.cards.map((c, j) => (
