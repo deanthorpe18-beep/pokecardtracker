@@ -1,144 +1,94 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export default function Home() {
+  const [page, setPage] = useState("home");
 
-  const [drops] = useState([
-    { name: "Scarlet & Violet 151", status: "Upcoming" },
-    { name: "Paradox Rift", status: "Released" },
-    { name: "Paldean Fates", status: "Released" }
-  ]);
+  const renderHome = () => (
+    <>
+      <h2>🔥 Pokémon Drops</h2>
+      <div className="card">Scarlet & Violet 151</div>
+      <div className="card">Paradox Rift</div>
 
-  const [news] = useState([
-    "Pokémon TCG market is seeing increased UK demand",
-    "New set announcements expected soon",
-    "Booster box prices fluctuating across retailers"
-  ]);
+      <h2>📰 News</h2>
+      <div className="card">New set announcements incoming</div>
+      <div className="card">UK market demand increasing</div>
+    </>
+  );
+
+  const renderMarket = () => (
+    <>
+      <h2>💰 Market Trends</h2>
+      <div className="card">Charizard EX - trending up</div>
+      <div className="card">Pikachu cards stabilising</div>
+    </>
+  );
 
   return (
     <>
-      {/* GLOBAL STYLE (NO EXTRA FILES NEEDED) */}
       <style>{`
         body {
           margin: 0;
           font-family: system-ui;
-          background: radial-gradient(circle at top, #0b1b3a, #000, #2a001a);
+          background: radial-gradient(circle at top, #0b1b3a, #000);
           color: white;
         }
 
         .container {
-          max-width: 1100px;
+          max-width: 1000px;
           margin: auto;
           padding: 20px;
-        }
-
-        /* HEADER */
-        .header {
-          text-align: center;
-          padding: 30px 10px;
-        }
-
-        .logo {
-          font-size: 32px;
-          font-weight: 900;
-          color: #ffcc00;
         }
 
         .nav {
           display: flex;
           justify-content: center;
-          gap: 20px;
-          margin-top: 10px;
+          gap: 12px;
+          margin: 20px 0;
         }
 
-        .nav a {
-          color: white;
-          text-decoration: none;
-          padding: 6px 12px;
-          border: 1px solid rgba(255,255,255,0.2);
+        .nav button {
+          padding: 8px 14px;
           border-radius: 999px;
+          border: 1px solid #444;
+          background: #111;
+          color: white;
+          cursor: pointer;
         }
 
-        .nav a:hover {
+        .nav button:hover {
           border-color: #ffcc00;
-          color: #ffcc00;
-        }
-
-        /* SECTIONS */
-        h2 {
-          color: #ffcc00;
-          margin-top: 30px;
-        }
-
-        .grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-          gap: 14px;
         }
 
         .card {
           background: rgba(255,255,255,0.06);
-          border: 1px solid rgba(255,255,255,0.12);
-          border-radius: 14px;
-          padding: 14px;
-          transition: 0.2s;
+          padding: 12px;
+          margin: 10px 0;
+          border-radius: 12px;
+          border: 1px solid rgba(255,255,255,0.1);
         }
 
-        .card:hover {
-          transform: translateY(-4px);
-          border-color: #ffcc00;
-        }
-
-        .small {
-          color: #aaa;
-          font-size: 13px;
+        h2 {
+          color: #ffcc00;
         }
       `}</style>
 
       <div className="container">
 
-        {/* HEADER */}
-        <div className="header">
+        <h1 style={{ textAlign: "center", color: "#ffcc00" }}>
+          ⚡ PokéTracker
+        </h1>
 
-          <div className="logo">
-            ⚡ PokéTracker
-          </div>
-
-          <div style={{ color: "#aaa", marginTop: 5 }}>
-            Live Pokémon Drops • News • Market Intelligence
-          </div>
-
-          {/* NAVIGATION */}
-          <div className="nav">
-            <a href="/">Home</a>
-            <a href="/app_market_page">Market</a>
-          </div>
-
+        {/* NAVIGATION (NO ROUTES NEEDED) */}
+        <div className="nav">
+          <button onClick={() => setPage("home")}>Home</button>
+          <button onClick={() => setPage("market")}>Market Trends</button>
         </div>
 
-        {/* DROPS */}
-        <h2>🔥 Pokémon Drops</h2>
-
-        <div className="grid">
-          {drops.map((d, i) => (
-            <div className="card" key={i}>
-              <b>{d.name}</b>
-              <div className="small">{d.status}</div>
-            </div>
-          ))}
-        </div>
-
-        {/* NEWS */}
-        <h2>📰 Latest News</h2>
-
-        <div className="grid">
-          {news.map((n, i) => (
-            <div className="card" key={i}>
-              {n}
-            </div>
-          ))}
-        </div>
+        {/* PAGE CONTENT */}
+        {page === "home" && renderHome()}
+        {page === "market" && renderMarket()}
 
       </div>
     </>
