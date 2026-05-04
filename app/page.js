@@ -8,42 +8,32 @@ export default function Home() {
   const [news, setNews] = useState([]);
   const [releases, setReleases] = useState([]);
 
-  // 🔄 AUTO REFRESH (every 5 minutes)
-  useEffect(() => {
-    const interval = setInterval(() => {
-      window.location.reload();
-    }, 300000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  // 📦 LOAD DATA
   useEffect(() => {
     async function load() {
       try {
-        // 🃏 Cards (market layer)
+        // 🃏 CARDS
         const cardRes = await axios.get(
           "https://api.pokemontcg.io/v2/cards?pageSize=6"
         );
         setCards(cardRes.data.data);
 
-        // 📰 NEWS (temporary real simulation until RSS parser upgrade)
+        // 📰 NEWS (temporary live feed simulation)
         setNews([
           {
-            title: "Pokémon TCG market showing strong activity",
-            source: "Live Feed Engine"
+            title: "New Pokémon TCG activity detected across markets",
+            source: "PokéCardTracker Feed"
+          },
+          {
+            title: "UK booster box demand increasing this week",
+            source: "Market Watch"
           },
           {
             title: "New set announcements expected soon",
-            source: "PokéCardTracker"
-          },
-          {
-            title: "UK stock levels fluctuating across retailers",
-            source: "Market Watch"
+            source: "Industry Feed"
           }
         ]);
 
-        // 📦 RELEASES (real API-based structure)
+        // 📦 RELEASES (real API-based sets)
         const setRes = await axios.get(
           "https://api.pokemontcg.io/v2/sets"
         );
@@ -59,7 +49,6 @@ export default function Home() {
           return {
             name: set.name,
             series: set.series,
-            releaseDate: set.releaseDate,
             daysLeft: diff
           };
         });
@@ -72,82 +61,66 @@ export default function Home() {
     }
 
     load();
+
+    // 🔄 auto refresh (keeps feed “alive”)
+    const interval = setInterval(() => {
+      window.location.reload();
+    }, 300000);
+
+    return () => clearInterval(interval);
   }, []);
 
   return (
-    <main className="min-h-screen bg-black text-white px-6 py-8">
+    <main>
 
       {/* HEADER */}
-      <div className="text-center mb-10">
-        <h1 className="text-5xl font-bold text-yellow-300">
-          ⚡ POKECARDTRACKER
-        </h1>
-        <p className="text-gray-400">
-          Live Pokémon Intelligence Feed
-        </p>
-      </div>
+      <h1>⚡ Pokecardtracker</h1>
+      <p style={{ textAlign: "center", color: "#aaa" }}>
+        Live Pokémon Drops • News • Market Intelligence
+      </p>
 
       {/* 🔥 DROPS */}
-      <section className="mb-12">
-        <h2 className="text-yellow-400 text-xl mb-4">
-          🔥 Live Drops & Releases
-        </h2>
+      <h2>🔥 Live Drops</h2>
 
-        <div className="grid md:grid-cols-2 gap-4">
-          {releases.map((r, i) => (
-            <div
-              key={i}
-              className="bg-zinc-900 border border-yellow-500 p-4 rounded-xl"
-            >
-              <p className="font-bold">{r.name}</p>
-              <p className="text-sm text-gray-400">{r.series}</p>
-              <p className="text-green-400 text-sm mt-1">
-                ⏳ {r.daysLeft} days left
-              </p>
-            </div>
-          ))}
-        </div>
-      </section>
+      <div className="grid">
+        {releases.map((r, i) => (
+          <div key={i} className="card">
+            <p><b>{r.name}</b></p>
+            <p style={{ color: "#aaa" }}>{r.series}</p>
+            <p style={{ color: "lime" }}>
+              ⏳ {r.daysLeft} days left
+            </p>
+          </div>
+        ))}
+      </div>
 
       {/* 📰 NEWS */}
-      <section className="mb-12">
-        <h2 className="text-blue-400 text-xl mb-4">
-          📰 Live News Feed
-        </h2>
+      <h2>📰 Live News Feed</h2>
 
-        <div className="space-y-3">
-          {news.map((n, i) => (
-            <div
-              key={i}
-              className="bg-zinc-900 border border-blue-600 p-4 rounded-xl"
-            >
-              <p>{n.title}</p>
-              <p className="text-xs text-gray-500">{n.source}</p>
-            </div>
-          ))}
-        </div>
-      </section>
+      <div className="grid">
+        {news.map((n, i) => (
+          <div key={i} className="card">
+            <p>{n.title}</p>
+            <p style={{ fontSize: 12, color: "#777" }}>
+              {n.source}
+            </p>
+          </div>
+        ))}
+      </div>
 
-      {/* 💰 MARKET (SECONDARY) */}
-      <section>
-        <h2 className="text-green-400 text-xl mb-4">
-          💰 Market Snapshot
-        </h2>
+      {/* 💰 MARKET */}
+      <h2>💰 Market Snapshot</h2>
 
-        <div className="grid md:grid-cols-3 gap-4">
-          {cards.map((c) => (
-            <div
-              key={c.id}
-              className="bg-zinc-900 border border-green-600 p-3 rounded-xl"
-            >
-              <p className="text-sm">{c.name}</p>
-              <p className="text-green-400 text-sm">
-                £{c.cardmarket?.prices?.averageSellPrice || "N/A"}
-              </p>
-            </div>
-          ))}
-        </div>
-      </section>
+      <div className="grid">
+        {cards.map((c) => (
+          <div key={c.id} className="card">
+            <p>{c.name}</p>
+            <p style={{ color: "lime" }}>
+              £{c.cardmarket?.prices?.averageSellPrice || "N/A"}
+            </p>
+          </div>
+        ))}
+      </div>
 
     </main>
   );
