@@ -1,83 +1,97 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function Home() {
-  const [tab, setTab] = useState("home");
+  const [sets, setSets] = useState([]);
+  const [chase, setChase] = useState([]);
 
-  const upcomingSets = [
-    { name: "Temporal Forces", date: "2026-02-14", items: "Booster Box • ETB • Blisters" },
-    { name: "Prismatic Evolutions", date: "2026-04-03", items: "Booster Box • Premium Collection" },
-    { name: "Shadow Zenith", date: "2026-06-18", items: "ETB • Booster Box • Mini Tins" }
-  ];
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const res = await fetch("https://api.pokemontcg.io/v2/sets", {
+          headers: {
+            "X-Api-Key": process.env.POKEMON_API_KEY,
+          },
+        });
 
-  const stockAlerts = [
-    { title: "Paradox Rift Booster Boxes", status: "Low stock in UK retailers" },
-    { title: "Paldean Fates ETB", status: "Reprint wave incoming" },
-    { title: "151 Booster Bundles", status: "High demand / limited availability" }
-  ];
+        const data = await res.json();
+        const today = new Date();
 
-  const news = [
-    "UK Pokémon market showing strong demand increase",
-    "New set announcements expected soon",
-    "Retailers adjusting allocation strategies",
-    "Collector demand rising across modern sets"
-  ];
+        // Filter recent + upcoming sets
+        const filtered = data.data.filter((set) => {
+          const release = new Date(set.releaseDate);
+          const diffDays = (today - release) / (1000 * 60 * 60 * 24);
+          return diffDays < 120;
+        });
 
-  const chaseBySet = [
-    {
-      set: "Temporal Forces",
-      cards: [
-        { name: "Charizard ex Alt", price: "£420" },
-        { name: "Gengar ex Alt", price: "£210" },
-        { name: "Mew ex Gold", price: "£140" },
-        { name: "Lugia ex Alt", price: "£260" },
-        { name: "Pikachu IR", price: "£180" },
-        { name: "Tyranitar ex", price: "£120" },
-        { name: "Eevee AR", price: "£95" },
-        { name: "Rayquaza ex", price: "£300" }
-      ]
+        const sorted = filtered.sort(
+          (a, b) => new Date(b.releaseDate) - new Date(a.releaseDate)
+        );
+
+        setSets(sorted);
+
+        // Load chase cards from newest set
+        if (sorted.length > 0) {
+          const setId = sorted[0].id;
+
+          const cardRes = await fetch(
+            `https://api.pokemontcg.io/v2/cards?q=set.id:${setId}`,
+            {
+              headers: {
+                "X-Api-Key": process.env.POKEMON_API_KEY,
+              },
+            }
+          );
+
+          const cardData = await cardRes.json();
+
+          const top8 = cardData.data
+            .filter((c) => c.images?.small)
+            .slice(0, 8);
+
+          setChase(top8);
+        }
+
+      } catch (err) {
+        console.error(err);
+      }
     }
-  ];
+
+    loadData();
+  }, []);
 
   return (
     <>
       <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Bungee&display=swap');
+
         body {
           margin: 0;
           font-family: system-ui;
-          background: radial-gradient(circle at top, #0b1b3a, #000);
+          background: radial-gradient(circle at top, #1a237e, #000);
           color: white;
         }
 
-        /* HEADER AREA */
         .header {
           text-align: center;
-          padding: 25px 10px 10px 10px;
+          padding: 30px 10px;
+          background: linear-gradient(90deg, #ffcb05, #3b4cca);
+          box-shadow: 0 0 25px rgba(255, 203, 5, 0.3);
         }
 
         .title {
-          font-size: 42px;
-          font-weight: 900;
-          color: #ffcc00;
-          letter-spacing: 1px;
-          text-shadow: 0 0 18px rgba(59,76,202,0.6);
+          font-size: 52px;
+          font-family: 'Bungee', system-ui;
+          color: white;
+          text-shadow: 3px 3px #2a75bb;
         }
 
-        /* NAV */
         .nav {
-          margin-top: 10px;
-          font-size: 14px;
+          margin-top: 8px;
+          color: white;
+          font-weight: 600;
           opacity: 0.9;
-        }
-
-        .nav span {
-          cursor: pointer;
-          margin: 0 10px;
-        }
-
-        .nav span:hover {
-          color: #ffcc00;
         }
 
         .container {
@@ -87,141 +101,113 @@ export default function Home() {
         }
 
         h2 {
-          color: #ffcc00;
-          margin-top: 25px;
+          color: #ffcb05;
+          margin-top: 30px;
         }
 
-        .list {
-          display: flex;
-          flex-direction: column;
-          gap: 12px;
-        }
-
-        .item {
-          padding: 14px;
-          border-radius: 12px;
-          background: rgba(255,255,255,0.05);
-          border: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .small {
-          font-size: 13px;
-          color: #aaa;
-          margin-top: 5px;
-        }
-
-        .alert {
-          color: #ffcc00;
-          font-weight: 600;
-        }
-
-        /* GRID FOR CHASE */
-        .grid4x2 {
+        /* GRID */
+        .grid {
           display: grid;
           grid-template-columns: repeat(4, 1fr);
           gap: 12px;
         }
 
-        @media (max-width: 900px) {
-          .grid4x2 {
+        @media (max-width: 800px) {
+          .grid {
             grid-template-columns: repeat(2, 1fr);
           }
         }
 
+        /* CARD STYLE */
         .card {
-          background: rgba(255,255,255,0.05);
-          border: 1px solid rgba(255,255,255,0.1);
-          padding: 12px;
+          background: rgba(255,255,255,0.06);
+          border: 1px solid rgba(255,203,5,0.2);
+          border-radius: 14px;
+          padding: 10px;
+          text-align: center;
+          transition: 0.2s;
+        }
+
+        .card:hover {
+          transform: scale(1.03);
+          border-color: #ffcb05;
+        }
+
+        .card img {
+          width: 100%;
+          border-radius: 10px;
+        }
+
+        .sets {
+          margin-top: 20px;
+        }
+
+        .setItem {
+          display: flex;
+          gap: 15px;
+          align-items: center;
+          padding: 14px;
+          margin-bottom: 10px;
           border-radius: 12px;
+          background: rgba(255,255,255,0.05);
+          border: 1px solid rgba(255,203,5,0.15);
+        }
+
+        .setItem img {
+          width: 80px;
+        }
+
+        .meta {
+          color: #aaa;
+          font-size: 13px;
         }
 
         .price {
           color: #00ff9d;
-          font-weight: 700;
-          margin-top: 6px;
+          font-weight: bold;
         }
       `}</style>
 
       {/* HEADER */}
       <div className="header">
-        <div className="title">⚡ PokéTracker</div>
-
-        {/* CLEAN CATEGORY BAR */}
-        <div className="nav">
-          <span onClick={() => setTab("home")}>Home</span>
-          <span>|</span>
-          <span onClick={() => setTab("chase")}>Chase Cards</span>
-          <span>|</span>
-          <span onClick={() => setTab("news")}>News</span>
-        </div>
+        <div className="title">PokéTracker</div>
+        <div className="nav">SETS | STOCK | CHASE CARDS | NEWS</div>
       </div>
 
       <div className="container">
 
-        {/* HOME */}
-        {tab === "home" && (
-          <>
-            <h2>📅 Upcoming Set Releases</h2>
+        {/* CHASE CARDS */}
+        <h2>💰 Top 8 Chase Cards</h2>
 
-            <div className="list">
-              {upcomingSets.map((s, i) => (
-                <div className="item" key={i}>
-                  <b>{s.name}</b>
-                  <div className="small">Release: {s.date}</div>
-                  <div className="small">{s.items}</div>
-                </div>
-              ))}
+        <div className="grid">
+          {chase.map((card) => (
+            <div className="card" key={card.id}>
+              <img src={card.images.small} />
+              <div>{card.name}</div>
             </div>
+          ))}
+        </div>
 
-            <h2>📦 Stock Alerts</h2>
+        {/* SETS */}
+        <h2>📅 Upcoming & Recent Sets</h2>
 
-            <div className="list">
-              {stockAlerts.map((a, i) => (
-                <div className="item" key={i}>
-                  <div className="alert">{a.title}</div>
-                  <div className="small">{a.status}</div>
+        <div className="sets">
+          {sets.map((set) => (
+            <div className="setItem" key={set.id}>
+              <img src={set.images.logo} />
+
+              <div>
+                <b>{set.name}</b>
+
+                <div className="meta">
+                  Release: {new Date(set.releaseDate).toLocaleDateString('en-GB')}
                 </div>
-              ))}
-            </div>
-          </>
-        )}
 
-        {/* CHASE */}
-        {tab === "chase" && (
-          <>
-            <h2>💰 Top 8 Chase Cards</h2>
-
-            {chaseBySet.map((set, i) => (
-              <div key={i}>
-                <h3 style={{ color: "#3b4cca" }}>{set.set}</h3>
-
-                <div className="grid4x2">
-                  {set.cards.map((c, j) => (
-                    <div className="card" key={j}>
-                      <b>{c.name}</b>
-                      <div className="price">{c.price}</div>
-                    </div>
-                  ))}
-                </div>
+                <div className="meta">{set.series}</div>
               </div>
-            ))}
-          </>
-        )}
-
-        {/* NEWS PAGE (RESTORED AS REQUESTED) */}
-        {tab === "news" && (
-          <>
-            <h2>📰 Pokémon News</h2>
-
-            <div className="list">
-              {news.map((n, i) => (
-                <div className="item" key={i}>
-                  {n}
-                </div>
-              ))}
             </div>
-          </>
-        )}
+          ))}
+        </div>
 
       </div>
     </>
