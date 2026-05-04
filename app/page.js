@@ -18,25 +18,27 @@ export default function Home() {
         const data = await res.json();
         const today = new Date();
 
-        // Filter recent + upcoming sets
+        // ✅ FIXED: safer filter (keeps upcoming + recent)
         const filtered = data.data.filter((set) => {
           const release = new Date(set.releaseDate);
           const diffDays = (today - release) / (1000 * 60 * 60 * 24);
-          return diffDays < 120;
+
+          // keep everything from past 1 year AND all future sets
+          return diffDays < 365 || release > today;
         });
 
         const sorted = filtered.sort(
-          (a, b) => new Date(b.releaseDate) - new Date(a.releaseDate)
+          (a, b) => new Date(a.releaseDate) - new Date(b.releaseDate)
         );
 
         setSets(sorted);
 
-        // Load chase cards from newest set
-        if (sorted.length > 0) {
-          const setId = sorted[0].id;
+        // 🎯 FIXED CHASE SYSTEM (no randomness)
+        const newestSet = sorted.find(s => new Date(s.releaseDate) <= today) || sorted[0];
 
+        if (newestSet) {
           const cardRes = await fetch(
-            `https://api.pokemontcg.io/v2/cards?q=set.id:${setId}`,
+            `https://api.pokemontcg.io/v2/cards?q=set.id:${newestSet.id}`,
             {
               headers: {
                 "X-Api-Key": process.env.POKEMON_API_KEY,
@@ -77,7 +79,6 @@ export default function Home() {
           text-align: center;
           padding: 30px 10px;
           background: linear-gradient(90deg, #ffcb05, #3b4cca);
-          box-shadow: 0 0 25px rgba(255, 203, 5, 0.3);
         }
 
         .title {
@@ -88,10 +89,9 @@ export default function Home() {
         }
 
         .nav {
-          margin-top: 8px;
-          color: white;
+          margin-top: 10px;
           font-weight: 600;
-          opacity: 0.9;
+          color: white;
         }
 
         .container {
@@ -118,19 +118,12 @@ export default function Home() {
           }
         }
 
-        /* CARD STYLE */
         .card {
           background: rgba(255,255,255,0.06);
           border: 1px solid rgba(255,203,5,0.2);
           border-radius: 14px;
           padding: 10px;
           text-align: center;
-          transition: 0.2s;
-        }
-
-        .card:hover {
-          transform: scale(1.03);
-          border-color: #ffcb05;
         }
 
         .card img {
@@ -161,17 +154,16 @@ export default function Home() {
           color: #aaa;
           font-size: 13px;
         }
-
-        .price {
-          color: #00ff9d;
-          font-weight: bold;
-        }
       `}</style>
 
       {/* HEADER */}
       <div className="header">
         <div className="title">PokéTracker</div>
-        <div className="nav">SETS | STOCK | CHASE CARDS | NEWS</div>
+
+        {/* ⚠️ now just visual (no broken links) */}
+        <div className="nav">
+          Sets | Stock Alerts | Chase Cards | News
+        </div>
       </div>
 
       <div className="container">
