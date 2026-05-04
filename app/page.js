@@ -10,7 +10,7 @@ export default function Home() {
   useEffect(() => {
     async function fetchCards() {
       const res = await axios.get(
-        "https://api.pokemontcg.io/v2/cards?pageSize=12"
+        "https://api.pokemontcg.io/v2/cards?pageSize=18"
       );
       setCards(res.data.data);
     }
@@ -18,47 +18,51 @@ export default function Home() {
   }, []);
 
   return (
-    <main style={{ background: "#0a0a0f", color: "white", minHeight: "100vh", padding: "20px" }}>
-      
-      <h1 style={{ fontSize: "3rem", textAlign: "center", marginBottom: "20px" }}>
-        ⚡ Pokecardtracker
-      </h1>
+    <main className="bg-gradient-to-br from-black via-purple-950 to-black min-h-screen text-white p-6">
 
-      <input
-        placeholder="Search Pokémon cards..."
-        style={{
-          width: "100%",
-          padding: "12px",
-          marginBottom: "30px",
-          borderRadius: "10px",
-          border: "none",
-        }}
-      />
+      {/* HEADER */}
+      <div className="text-center mb-10">
+        <h1 className="text-5xl font-bold tracking-wide text-yellow-300 drop-shadow-lg">
+          ⚡ POKECARDTRACKER
+        </h1>
+        <p className="text-gray-400 mt-2">
+          Live Pokémon Card Market Tracker
+        </p>
+      </div>
 
-      <div style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
-        gap: "20px"
-      }}>
+      {/* SEARCH */}
+      <div className="flex justify-center mb-10">
+        <input
+          placeholder="Search Pokémon cards..."
+          className="w-full max-w-xl p-3 rounded-xl bg-black/60 border border-purple-500 outline-none focus:ring-2 focus:ring-yellow-400"
+        />
+      </div>
+
+      {/* GRID */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+
         {cards.map((card) => (
           <motion.div
             key={card.id}
             whileHover={{ scale: 1.08 }}
-            style={{
-              background: "#111",
-              borderRadius: "15px",
-              padding: "10px",
-              boxShadow: "0 0 20px rgba(0,0,0,0.5)",
-              textAlign: "center"
-            }}
+            className="bg-black/60 border border-purple-700 rounded-2xl p-3 shadow-lg shadow-purple-900/30"
           >
-            <img src={card.images.small} style={{ width: "100%" }} />
-            <h3>{card.name}</h3>
-            <p>
+            <img
+              src={card.images.small}
+              className="rounded-xl w-full mb-3"
+            />
+
+            <h2 className="font-semibold text-sm">
+              {card.name}
+            </h2>
+
+            <p className="text-green-400 text-sm">
               £{card.cardmarket?.prices?.averageSellPrice || "N/A"}
             </p>
+
           </motion.div>
         ))}
+
       </div>
     </main>
   );
