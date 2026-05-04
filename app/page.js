@@ -3,31 +3,32 @@
 import { useEffect, useState } from "react";
 
 export default function Home() {
-  const [news] = useState([
-    "New Pokémon set announcements expected soon",
-    "UK booster box demand rising this week",
-    "TCG market showing strong movement"
-  ]);
 
   const [drops] = useState([
-    { name: "Scarlet & Violet 151", date: "Add to calendar" },
-    { name: "Paradox Rift", date: "Add to calendar" },
-    { name: "Paldean Fates", date: "Add to calendar" }
+    { name: "Scarlet & Violet 151", status: "Upcoming" },
+    { name: "Paradox Rift", status: "Released" },
+    { name: "Paldean Fates", status: "Released" }
+  ]);
+
+  const [news] = useState([
+    "Pokémon TCG market is seeing increased UK demand",
+    "New set announcements expected soon",
+    "Booster box prices fluctuating across retailers"
   ]);
 
   return (
     <>
-      {/* PAGE STYLES (NO OTHER FILES NEEDED) */}
+      {/* GLOBAL STYLE (NO EXTRA FILES NEEDED) */}
       <style>{`
         body {
           margin: 0;
           font-family: system-ui;
-          background: linear-gradient(180deg, #0b1b3a, #000, #2a001a);
+          background: radial-gradient(circle at top, #0b1b3a, #000, #2a001a);
           color: white;
         }
 
         .container {
-          max-width: 1000px;
+          max-width: 1100px;
           margin: auto;
           padding: 20px;
         }
@@ -39,31 +40,29 @@ export default function Home() {
         }
 
         .logo {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          gap: 10px;
-        }
-
-        .ball {
-          width: 40px;
-          height: 40px;
-          border-radius: 50%;
-          background: radial-gradient(circle at top, #ff0000, #7a0000);
-          border: 3px solid #ffcc00;
-          box-shadow: 0 0 15px rgba(255,0,0,0.6);
-        }
-
-        .title {
-          font-size: 28px;
+          font-size: 32px;
           font-weight: 900;
           color: #ffcc00;
         }
 
-        .subtitle {
-          color: #aaa;
-          font-size: 13px;
-          margin-top: 6px;
+        .nav {
+          display: flex;
+          justify-content: center;
+          gap: 20px;
+          margin-top: 10px;
+        }
+
+        .nav a {
+          color: white;
+          text-decoration: none;
+          padding: 6px 12px;
+          border: 1px solid rgba(255,255,255,0.2);
+          border-radius: 999px;
+        }
+
+        .nav a:hover {
+          border-color: #ffcc00;
+          color: #ffcc00;
         }
 
         /* SECTIONS */
@@ -72,14 +71,12 @@ export default function Home() {
           margin-top: 30px;
         }
 
-        /* GRID */
         .grid {
           display: grid;
           grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
           gap: 14px;
         }
 
-        /* CARD */
         .card {
           background: rgba(255,255,255,0.06);
           border: 1px solid rgba(255,255,255,0.12);
@@ -97,16 +94,6 @@ export default function Home() {
           color: #aaa;
           font-size: 13px;
         }
-
-        button {
-          margin-top: 8px;
-          padding: 6px 10px;
-          border-radius: 999px;
-          border: none;
-          background: #ffcc00;
-          cursor: pointer;
-          font-weight: 600;
-        }
       `}</style>
 
       <div className="container">
@@ -115,30 +102,36 @@ export default function Home() {
         <div className="header">
 
           <div className="logo">
-            <div className="ball"></div>
-            <div className="title">PokéTracker</div>
+            ⚡ PokéTracker
           </div>
 
-          <div className="subtitle">
+          <div style={{ color: "#aaa", marginTop: 5 }}>
             Live Pokémon Drops • News • Market Intelligence
+          </div>
+
+          {/* NAVIGATION */}
+          <div className="nav">
+            <a href="/">Home</a>
+            <a href="/app_market_page">Market</a>
           </div>
 
         </div>
 
         {/* DROPS */}
         <h2>🔥 Pokémon Drops</h2>
+
         <div className="grid">
           {drops.map((d, i) => (
             <div className="card" key={i}>
               <b>{d.name}</b>
-              <div className="small">{d.date}</div>
-              <button>Add to Calendar</button>
+              <div className="small">{d.status}</div>
             </div>
           ))}
         </div>
 
         {/* NEWS */}
         <h2>📰 Latest News</h2>
+
         <div className="grid">
           {news.map((n, i) => (
             <div className="card" key={i}>
