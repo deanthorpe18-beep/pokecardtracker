@@ -3,19 +3,33 @@
 import { useState } from "react";
 
 export default function Home() {
-
-  const [tab, setTab] = useState("home");
+  const [tab, setTab] = useState("drops");
 
   const drops = [
-    { name: "Scarlet & Violet 151", date: "2023-09-22", stock: "Low stock in UK" },
-    { name: "Paradox Rift", date: "2023-11-03", stock: "Reprints arriving" },
-    { name: "Paldean Fates", date: "2024-01-26", stock: "Available in most retailers" }
+    {
+      name: "Scarlet & Violet 151",
+      date: "2023-09-22",
+      stock: "Low UK stock",
+      img: "https://images.pokemontcg.io/sv3/4_hires.png"
+    },
+    {
+      name: "Paradox Rift",
+      date: "2023-11-03",
+      stock: "Reprints incoming",
+      img: "https://images.pokemontcg.io/sv4/1_hires.png"
+    },
+    {
+      name: "Paldean Fates",
+      date: "2024-01-26",
+      stock: "Widely available",
+      img: "https://images.pokemontcg.io/sv4pt5/12_hires.png"
+    }
   ];
 
   const news = [
-    "UK Pokémon stock levels improving this week",
-    "New set announcements expected soon",
-    "Retailers adjusting booster box allocations"
+    "UK Pokémon stock improving across major retailers",
+    "New set leaks suggest upcoming reprint wave",
+    "Booster box demand increasing in Europe"
   ];
 
   return (
@@ -33,33 +47,27 @@ export default function Home() {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          padding: 18px 24px;
-          border-bottom: 1px solid rgba(255,255,255,0.08);
+          padding: 16px 22px;
           background: rgba(0,0,0,0.6);
-          backdrop-filter: blur(10px);
+          backdrop-filter: blur(12px);
           position: sticky;
           top: 0;
+          border-bottom: 1px solid rgba(255,255,255,0.08);
         }
 
         .logo {
           font-size: 20px;
           font-weight: 900;
           color: #ffcc00;
-          letter-spacing: 1px;
-        }
-
-        .nav {
-          display: flex;
-          gap: 14px;
         }
 
         .nav button {
           background: none;
           border: none;
           color: white;
+          margin-left: 12px;
           cursor: pointer;
-          font-size: 14px;
-          opacity: 0.8;
+          opacity: 0.7;
         }
 
         .nav button:hover {
@@ -67,9 +75,8 @@ export default function Home() {
           color: #ffcc00;
         }
 
-        /* MAIN */
         .container {
-          max-width: 900px;
+          max-width: 1000px;
           margin: auto;
           padding: 20px;
         }
@@ -79,10 +86,44 @@ export default function Home() {
           margin-top: 30px;
         }
 
-        /* FEED STYLE (IMPORTANT CHANGE) */
-        .item {
-          padding: 14px;
-          border-bottom: 1px solid rgba(255,255,255,0.08);
+        /* CARD GRID */
+        .grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+          gap: 16px;
+        }
+
+        /* BIG VISUAL CARD */
+        .card {
+          background: rgba(255,255,255,0.05);
+          border: 1px solid rgba(255,255,255,0.1);
+          border-radius: 16px;
+          overflow: hidden;
+          transition: 0.25s;
+        }
+
+        .card:hover {
+          transform: translateY(-6px);
+          border-color: #ffcc00;
+        }
+
+        .card img {
+          width: 100%;
+          height: 160px;
+          object-fit: cover;
+        }
+
+        .card-content {
+          padding: 12px;
+        }
+
+        .tag {
+          display: inline-block;
+          padding: 2px 8px;
+          font-size: 11px;
+          border-radius: 999px;
+          background: #3b4cca;
+          margin-top: 6px;
         }
 
         .meta {
@@ -90,23 +131,14 @@ export default function Home() {
           font-size: 13px;
           margin-top: 4px;
         }
-
-        .tag {
-          display: inline-block;
-          padding: 2px 8px;
-          border-radius: 999px;
-          font-size: 11px;
-          margin-top: 6px;
-          background: #3b4cca;
-        }
       `}</style>
 
-      {/* TOP NAV */}
+      {/* TOP BAR */}
       <div className="topbar">
         <div className="logo">⚡ PokéTracker</div>
 
         <div className="nav">
-          <button onClick={() => setTab("home")}>Drops</button>
+          <button onClick={() => setTab("drops")}>Drops</button>
           <button onClick={() => setTab("news")}>News</button>
           <button onClick={() => setTab("stock")}>Stock</button>
         </div>
@@ -114,18 +146,31 @@ export default function Home() {
 
       <div className="container">
 
-        {/* DROPS = DEFAULT HOME */}
-        {tab === "home" && (
+        {/* DROPS */}
+        {tab === "drops" && (
           <>
             <h2>🔥 Set Releases</h2>
 
-            {drops.map((d, i) => (
-              <div className="item" key={i}>
-                <b>{d.name}</b>
-                <div className="meta">Release: {d.date}</div>
-                <div className="meta">{d.stock}</div>
-              </div>
-            ))}
+            <div className="grid">
+              {drops.map((d, i) => (
+                <div className="card" key={i}>
+                  <img src={d.img} />
+                  <div className="card-content">
+                    <b>{d.name}</b>
+
+                    <div className="meta">
+                      Release: {d.date}
+                    </div>
+
+                    <div className="meta">
+                      {d.stock}
+                    </div>
+
+                    <div className="tag">POKÉMON SET</div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </>
         )}
 
@@ -133,11 +178,16 @@ export default function Home() {
         {tab === "news" && (
           <>
             <h2>📰 News Feed</h2>
-            {news.map((n, i) => (
-              <div className="item" key={i}>
-                {n}
-              </div>
-            ))}
+
+            <div className="grid">
+              {news.map((n, i) => (
+                <div className="card" key={i}>
+                  <div className="card-content">
+                    {n}
+                  </div>
+                </div>
+              ))}
+            </div>
           </>
         )}
 
@@ -146,12 +196,18 @@ export default function Home() {
           <>
             <h2>📦 Stock Updates</h2>
 
-            <div className="item">
-              UK retailers: booster box restocks expected this week
-            </div>
+            <div className="grid">
+              <div className="card">
+                <div className="card-content">
+                  UK: Booster boxes low stock across major retailers
+                </div>
+              </div>
 
-            <div className="item">
-              Amazon UK: mixed availability on new sets
+              <div className="card">
+                <div className="card-content">
+                  Amazon UK: intermittent restocks detected
+                </div>
+              </div>
             </div>
           </>
         )}
