@@ -5,42 +5,25 @@ import { useState } from "react";
 export default function Home() {
   const [tab, setTab] = useState("home");
 
-  /* ---------------- UPCOMING SETS ---------------- */
   const upcomingSets = [
-    {
-      name: "Temporal Forces",
-      date: "2026-02-14",
-      items: "Booster Box • ETB • Blisters"
-    },
-    {
-      name: "Prismatic Evolutions",
-      date: "2026-04-03",
-      items: "Booster Box • Premium Collection"
-    },
-    {
-      name: "Shadow Zenith",
-      date: "2026-06-18",
-      items: "ETB • Booster Box • Mini Tins"
-    }
+    { name: "Temporal Forces", date: "2026-02-14", items: "Booster Box • ETB • Blisters" },
+    { name: "Prismatic Evolutions", date: "2026-04-03", items: "Booster Box • Premium Collection" },
+    { name: "Shadow Zenith", date: "2026-06-18", items: "ETB • Booster Box • Mini Tins" }
   ];
 
-  /* ---------------- STOCK ALERTS (NEW FOCUS) ---------------- */
   const stockAlerts = [
-    {
-      title: "Paradox Rift Booster Boxes",
-      status: "⚠️ Low stock in UK retailers"
-    },
-    {
-      title: "Paldean Fates ETB",
-      status: "📦 Reprint wave arriving soon"
-    },
-    {
-      title: "151 Booster Bundles",
-      status: "🔥 High demand, intermittent availability"
-    }
+    { title: "Paradox Rift Booster Boxes", status: "Low stock in UK retailers" },
+    { title: "Paldean Fates ETB", status: "Reprint wave incoming" },
+    { title: "151 Booster Bundles", status: "High demand / limited availability" }
   ];
 
-  /* ---------------- CHASE CARDS ---------------- */
+  const news = [
+    "UK Pokémon market showing strong demand increase",
+    "New set announcements expected soon",
+    "Retailers adjusting allocation strategies",
+    "Collector demand rising across modern sets"
+  ];
+
   const chaseBySet = [
     {
       set: "Temporal Forces",
@@ -53,19 +36,6 @@ export default function Home() {
         { name: "Tyranitar ex", price: "£120" },
         { name: "Eevee AR", price: "£95" },
         { name: "Rayquaza ex", price: "£300" }
-      ]
-    },
-    {
-      set: "Prismatic Evolutions",
-      cards: [
-        { name: "Umbreon VMAX Alt", price: "£310" },
-        { name: "Espeon V Alt", price: "£170" },
-        { name: "Sylveon ex", price: "£160" },
-        { name: "Glaceon VMAX", price: "£150" },
-        { name: "Leafeon V", price: "£120" },
-        { name: "Flareon ex", price: "£110" },
-        { name: "Vaporeon AR", price: "£90" },
-        { name: "Jolteon AR", price: "£95" }
       ]
     }
   ];
@@ -80,30 +50,33 @@ export default function Home() {
           color: white;
         }
 
-        .topbar {
-          display: flex;
-          justify-content: space-between;
-          padding: 16px 20px;
-          background: rgba(0,0,0,0.6);
-          border-bottom: 1px solid rgba(255,255,255,0.08);
-          position: sticky;
-          top: 0;
+        /* HEADER AREA */
+        .header {
+          text-align: center;
+          padding: 25px 10px 10px 10px;
         }
 
-        .logo {
+        .title {
+          font-size: 42px;
           font-weight: 900;
           color: #ffcc00;
+          letter-spacing: 1px;
+          text-shadow: 0 0 18px rgba(59,76,202,0.6);
         }
 
-        .nav button {
-          background: none;
-          border: none;
-          color: white;
-          margin-left: 12px;
+        /* NAV */
+        .nav {
+          margin-top: 10px;
+          font-size: 14px;
+          opacity: 0.9;
+        }
+
+        .nav span {
           cursor: pointer;
+          margin: 0 10px;
         }
 
-        .nav button:hover {
+        .nav span:hover {
           color: #ffcc00;
         }
 
@@ -126,17 +99,23 @@ export default function Home() {
 
         .item {
           padding: 14px;
-          border: 1px solid rgba(255,255,255,0.1);
           border-radius: 12px;
           background: rgba(255,255,255,0.05);
+          border: 1px solid rgba(255,255,255,0.1);
         }
 
         .small {
-          color: #aaa;
           font-size: 13px;
+          color: #aaa;
           margin-top: 5px;
         }
 
+        .alert {
+          color: #ffcc00;
+          font-weight: 600;
+        }
+
+        /* GRID FOR CHASE */
         .grid4x2 {
           display: grid;
           grid-template-columns: repeat(4, 1fr);
@@ -161,26 +140,25 @@ export default function Home() {
           font-weight: 700;
           margin-top: 6px;
         }
-
-        .alert {
-          color: #ffcc00;
-          font-weight: 600;
-        }
       `}</style>
 
-      {/* TOP BAR */}
-      <div className="topbar">
-        <div className="logo">⚡ PokéTracker</div>
+      {/* HEADER */}
+      <div className="header">
+        <div className="title">⚡ PokéTracker</div>
 
+        {/* CLEAN CATEGORY BAR */}
         <div className="nav">
-          <button onClick={() => setTab("home")}>Home</button>
-          <button onClick={() => setTab("chase")}>Top Chase Cards</button>
+          <span onClick={() => setTab("home")}>Home</span>
+          <span>|</span>
+          <span onClick={() => setTab("chase")}>Chase Cards</span>
+          <span>|</span>
+          <span onClick={() => setTab("news")}>News</span>
         </div>
       </div>
 
       <div className="container">
 
-        {/* ---------------- HOME ---------------- */}
+        {/* HOME */}
         {tab === "home" && (
           <>
             <h2>📅 Upcoming Set Releases</h2>
@@ -208,7 +186,7 @@ export default function Home() {
           </>
         )}
 
-        {/* ---------------- CHASE ---------------- */}
+        {/* CHASE */}
         {tab === "chase" && (
           <>
             <h2>💰 Top 8 Chase Cards</h2>
@@ -227,6 +205,21 @@ export default function Home() {
                 </div>
               </div>
             ))}
+          </>
+        )}
+
+        {/* NEWS PAGE (RESTORED AS REQUESTED) */}
+        {tab === "news" && (
+          <>
+            <h2>📰 Pokémon News</h2>
+
+            <div className="list">
+              {news.map((n, i) => (
+                <div className="item" key={i}>
+                  {n}
+                </div>
+              ))}
+            </div>
           </>
         )}
 
