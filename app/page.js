@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 
 export default function Home() {
   const [sets, setSets] = useState([]);
-  const [chase, setChase] = useState([]);
 
   useEffect(() => {
     async function loadData() {
@@ -18,42 +17,17 @@ export default function Home() {
         const data = await res.json();
         const today = new Date();
 
-        // ✅ FIXED: safer filter (keeps upcoming + recent)
+        // Keep upcoming + recent sets
         const filtered = data.data.filter((set) => {
           const release = new Date(set.releaseDate);
-          const diffDays = (today - release) / (1000 * 60 * 60 * 24);
-
-          // keep everything from past 1 year AND all future sets
-          return diffDays < 365 || release > today;
+          return release >= new Date(today.getFullYear() - 1, today.getMonth(), today.getDate());
         });
 
         const sorted = filtered.sort(
-          (a, b) => new Date(a.releaseDate) - new Date(b.releaseDate)
+          (a, b) => new Date(b.releaseDate) - new Date(a.releaseDate)
         );
 
         setSets(sorted);
-
-        // 🎯 FIXED CHASE SYSTEM (no randomness)
-        const newestSet = sorted.find(s => new Date(s.releaseDate) <= today) || sorted[0];
-
-        if (newestSet) {
-          const cardRes = await fetch(
-            `https://api.pokemontcg.io/v2/cards?q=set.id:${newestSet.id}`,
-            {
-              headers: {
-                "X-Api-Key": process.env.POKEMON_API_KEY,
-              },
-            }
-          );
-
-          const cardData = await cardRes.json();
-
-          const top8 = cardData.data
-            .filter((c) => c.images?.small)
-            .slice(0, 8);
-
-          setChase(top8);
-        }
 
       } catch (err) {
         console.error(err);
@@ -90,8 +64,13 @@ export default function Home() {
 
         .nav {
           margin-top: 10px;
-          font-weight: 600;
+        }
+
+        .nav a {
           color: white;
+          text-decoration: none;
+          margin: 0 10px;
+          font-weight: 600;
         }
 
         .container {
@@ -103,36 +82,6 @@ export default function Home() {
         h2 {
           color: #ffcb05;
           margin-top: 30px;
-        }
-
-        /* GRID */
-        .grid {
-          display: grid;
-          grid-template-columns: repeat(4, 1fr);
-          gap: 12px;
-        }
-
-        @media (max-width: 800px) {
-          .grid {
-            grid-template-columns: repeat(2, 1fr);
-          }
-        }
-
-        .card {
-          background: rgba(255,255,255,0.06);
-          border: 1px solid rgba(255,203,5,0.2);
-          border-radius: 14px;
-          padding: 10px;
-          text-align: center;
-        }
-
-        .card img {
-          width: 100%;
-          border-radius: 10px;
-        }
-
-        .sets {
-          margin-top: 20px;
         }
 
         .setItem {
@@ -160,46 +109,31 @@ export default function Home() {
       <div className="header">
         <div className="title">PokéTracker</div>
 
-        {/* ⚠️ now just visual (no broken links) */}
         <div className="nav">
-          Sets | Stock Alerts | Chase Cards | News
+          <a href="/">Home</a>
+          <a href="/chase-cards">Chase Cards</a>
         </div>
       </div>
 
       <div className="container">
 
-        {/* CHASE CARDS */}
-        <h2>💰 Top 8 Chase Cards</h2>
-
-        <div className="grid">
-          {chase.map((card) => (
-            <div className="card" key={card.id}>
-              <img src={card.images.small} />
-              <div>{card.name}</div>
-            </div>
-          ))}
-        </div>
-
-        {/* SETS */}
         <h2>📅 Upcoming & Recent Sets</h2>
 
-        <div className="sets">
-          {sets.map((set) => (
-            <div className="setItem" key={set.id}>
-              <img src={set.images.logo} />
+        {sets.map((set) => (
+          <div className="setItem" key={set.id}>
+            <img src={set.images.logo} />
 
-              <div>
-                <b>{set.name}</b>
+            <div>
+              <b>{set.name}</b>
 
-                <div className="meta">
-                  Release: {new Date(set.releaseDate).toLocaleDateString('en-GB')}
-                </div>
-
-                <div className="meta">{set.series}</div>
+              <div className="meta">
+                Release: {new Date(set.releaseDate).toLocaleDateString('en-GB')}
               </div>
+
+              <div className="meta">{set.series}</div>
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
 
       </div>
     </>
