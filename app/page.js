@@ -3,24 +3,19 @@
 import { useState } from "react";
 
 export default function Home() {
-  const [page, setPage] = useState("dashboard");
 
-  const stats = [
-    { label: "Active Sets", value: "12", color: "#3b4cca" },
-    { label: "Upcoming Drops", value: "3", color: "#ffcc00" },
-    { label: "Trending Cards", value: "8", color: "#ff3b3b" }
-  ];
+  const [tab, setTab] = useState("home");
 
   const drops = [
-    { name: "Scarlet & Violet 151", status: "Upcoming", tag: "HOT" },
-    { name: "Paradox Rift", status: "Live", tag: "ACTIVE" },
-    { name: "Paldean Fates", status: "Released", tag: "STABLE" }
+    { name: "Scarlet & Violet 151", date: "2023-09-22", stock: "Low stock in UK" },
+    { name: "Paradox Rift", date: "2023-11-03", stock: "Reprints arriving" },
+    { name: "Paldean Fates", date: "2024-01-26", stock: "Available in most retailers" }
   ];
 
   const news = [
-    "UK Pokémon market demand rising sharply",
-    "New Japanese set leak circulating",
-    "Booster box prices fluctuating across retailers"
+    "UK Pokémon stock levels improving this week",
+    "New set announcements expected soon",
+    "Retailers adjusting booster box allocations"
   ];
 
   return (
@@ -29,169 +24,138 @@ export default function Home() {
         body {
           margin: 0;
           font-family: system-ui;
-          background: #050914;
+          background: radial-gradient(circle at top, #0b1b3a, #000);
           color: white;
         }
 
-        .layout {
+        /* TOP BAR */
+        .topbar {
           display: flex;
-          min-height: 100vh;
+          justify-content: space-between;
+          align-items: center;
+          padding: 18px 24px;
+          border-bottom: 1px solid rgba(255,255,255,0.08);
+          background: rgba(0,0,0,0.6);
+          backdrop-filter: blur(10px);
+          position: sticky;
+          top: 0;
         }
 
-        /* SIDEBAR */
-        .sidebar {
-          width: 220px;
-          background: #0b1024;
-          padding: 20px;
-          border-right: 1px solid rgba(255,255,255,0.08);
-        }
-
-        .brand {
-          font-size: 22px;
+        .logo {
+          font-size: 20px;
           font-weight: 900;
           color: #ffcc00;
-          margin-bottom: 20px;
+          letter-spacing: 1px;
         }
 
-        .navbtn {
-          display: block;
-          width: 100%;
-          margin: 8px 0;
-          padding: 10px;
-          border-radius: 10px;
-          border: none;
-          background: rgba(255,255,255,0.05);
-          color: white;
-          text-align: left;
-          cursor: pointer;
-        }
-
-        .navbtn:hover {
-          background: rgba(255,204,0,0.15);
-        }
-
-        /* MAIN */
-        .main {
-          flex: 1;
-          padding: 30px;
-        }
-
-        h1 {
-          font-size: 32px;
-          color: #ffcc00;
-          margin-bottom: 20px;
-        }
-
-        /* GRID */
-        .grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        .nav {
+          display: flex;
           gap: 14px;
         }
 
-        /* CARD */
-        .card {
-          background: rgba(255,255,255,0.05);
-          border: 1px solid rgba(255,255,255,0.08);
-          border-radius: 14px;
+        .nav button {
+          background: none;
+          border: none;
+          color: white;
+          cursor: pointer;
+          font-size: 14px;
+          opacity: 0.8;
+        }
+
+        .nav button:hover {
+          opacity: 1;
+          color: #ffcc00;
+        }
+
+        /* MAIN */
+        .container {
+          max-width: 900px;
+          margin: auto;
+          padding: 20px;
+        }
+
+        h2 {
+          color: #ffcc00;
+          margin-top: 30px;
+        }
+
+        /* FEED STYLE (IMPORTANT CHANGE) */
+        .item {
           padding: 14px;
+          border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .meta {
+          color: #aaa;
+          font-size: 13px;
+          margin-top: 4px;
         }
 
         .tag {
           display: inline-block;
           padding: 2px 8px;
-          font-size: 11px;
           border-radius: 999px;
-          background: #ffcc00;
-          color: black;
+          font-size: 11px;
           margin-top: 6px;
-        }
-
-        .stat {
-          font-size: 26px;
-          font-weight: 800;
-        }
-
-        .label {
-          color: #aaa;
-          font-size: 13px;
+          background: #3b4cca;
         }
       `}</style>
 
-      <div className="layout">
+      {/* TOP NAV */}
+      <div className="topbar">
+        <div className="logo">⚡ PokéTracker</div>
 
-        {/* SIDEBAR */}
-        <div className="sidebar">
-          <div className="brand">⚡ PokéTracker</div>
-
-          <button className="navbtn" onClick={() => setPage("dashboard")}>
-            Dashboard
-          </button>
-
-          <button className="navbtn" onClick={() => setPage("drops")}>
-            Drops
-          </button>
-
-          <button className="navbtn" onClick={() => setPage("market")}>
-            Market
-          </button>
-
-          <button className="navbtn" onClick={() => setPage("news")}>
-            News
-          </button>
+        <div className="nav">
+          <button onClick={() => setTab("home")}>Drops</button>
+          <button onClick={() => setTab("news")}>News</button>
+          <button onClick={() => setTab("stock")}>Stock</button>
         </div>
+      </div>
 
-        {/* MAIN */}
-        <div className="main">
+      <div className="container">
 
-          {page === "dashboard" && (
-            <>
-              <h1>Dashboard</h1>
+        {/* DROPS = DEFAULT HOME */}
+        {tab === "home" && (
+          <>
+            <h2>🔥 Set Releases</h2>
 
-              <div className="grid">
-                {stats.map((s, i) => (
-                  <div className="card" key={i}>
-                    <div className="stat" style={{ color: s.color }}>
-                      {s.value}
-                    </div>
-                    <div className="label">{s.label}</div>
-                  </div>
-                ))}
+            {drops.map((d, i) => (
+              <div className="item" key={i}>
+                <b>{d.name}</b>
+                <div className="meta">Release: {d.date}</div>
+                <div className="meta">{d.stock}</div>
               </div>
-            </>
-          )}
+            ))}
+          </>
+        )}
 
-          {page === "drops" && (
-            <>
-              <h1>Drops</h1>
-              {drops.map((d, i) => (
-                <div className="card" key={i}>
-                  <b>{d.name}</b>
-                  <div>{d.status}</div>
-                  <div className="tag">{d.tag}</div>
-                </div>
-              ))}
-            </>
-          )}
+        {/* NEWS */}
+        {tab === "news" && (
+          <>
+            <h2>📰 News Feed</h2>
+            {news.map((n, i) => (
+              <div className="item" key={i}>
+                {n}
+              </div>
+            ))}
+          </>
+        )}
 
-          {page === "market" && (
-            <>
-              <h1>Market</h1>
-              <div className="card">Charizard EX trending upward</div>
-              <div className="card">Umbreon cards increasing demand</div>
-            </>
-          )}
+        {/* STOCK */}
+        {tab === "stock" && (
+          <>
+            <h2>📦 Stock Updates</h2>
 
-          {page === "news" && (
-            <>
-              <h1>News</h1>
-              {news.map((n, i) => (
-                <div className="card" key={i}>{n}</div>
-              ))}
-            </>
-          )}
+            <div className="item">
+              UK retailers: booster box restocks expected this week
+            </div>
 
-        </div>
+            <div className="item">
+              Amazon UK: mixed availability on new sets
+            </div>
+          </>
+        )}
+
       </div>
     </>
   );
